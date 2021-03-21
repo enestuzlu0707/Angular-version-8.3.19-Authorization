@@ -2,6 +2,7 @@ const express = require('express');
 const mockDB = require('./data.mock');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const jwtService = require('./jwt');
 
 const app = express();
 
@@ -29,9 +30,19 @@ app.post('/login', function (req, res) {
     return res.status(400).send('Username or password is wrong!');
   }
 
-  // generate token
-  // generate refresh token
-  res.send(user);
+  const payload = {
+    id : user.id,
+    email: user.email,
+    username: user.username
+  };
+  const accessToken = jwtService.getAccessToken(payload);
+  const refreshToken = jwtService.getRefreshToken(payload);
+
+  res.send({
+    user,
+    accessToken,
+    refreshToken
+  });
 });
 
 /**
